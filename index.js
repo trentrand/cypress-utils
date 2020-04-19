@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const yargs = require('yargs');
+const timesLimit = require('async/timesLimit');
 const cypress = require('cypress');
 const cypressConfig = require('../cypress.json');
 
@@ -33,19 +34,32 @@ var argv = yargs.scriptName('cypress-utils')
   .showHelpOnFail(true)
   .argv
 
+async function createTestSample() {
+  try {
+    const results = await cypress.run({
+      ...cypressConfig,
+      spec: specFiles.join(','),
+      reporter: 'list'
+    });
+    return results;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+function printResults(error, results) {
+  if (error) {
+    throw error;
+  }
+
+  console.log(JSON.stringify(results, null, 2));
+}
+
 // Read user-specified spec files from filesystem
 const specFiles = fs.readdirSync(cypressConfig.integrationFolder)
   .filter(fileName => fileName.toLowerCase().includes(argv.fileIdentifier))
   .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
 
-try {
-  const results = await cypress.run({
-    ...cypressConfig,
-    spec: specFiles.join(','),
-    reporter: 'list'
-  });
-  return results;
-}
-catch (error) {
-  throw error;
-}
+// Run stress-test command
+timesLimit(argv.trialCount, argv.limit, createTestSample, printResults);
