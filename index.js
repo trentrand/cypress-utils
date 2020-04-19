@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const yargs = require('yargs');
 
 var argv = yargs.scriptName('cypress-utils')
