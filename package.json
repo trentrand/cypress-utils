@@ -1,0 +1,24 @@
+{
+  "name": "cypress-utils",
+  "version": "1.0.0",
+  "description": "Easily parallelize and stress-test your Cypress tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trentrand/cypress-utils.git"
+  },
+  "keywords": [
+    "cypress",
+    "command-line-tool",
+    "nodejs"
+  ],
+  "author": "Trent Rand <contact@trentrand.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/trentrand/cypress-utils/issues"
+  },
+  "homepage": "https://github.com/trentrand/cypress-utils#readme"
+}
