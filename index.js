@@ -76,6 +76,9 @@ function printResults(error, results) {
     throw error;
   }
 
+  const elapsedTimeInSeconds = parseInt(console.timeLog('elapsedTime')) / 1000;
+  console.log(`Stress test completed in ${elapsedTimeInSeconds} seconds`);
+
   const formattedResults = computeResults(results);
 
   Object.entries(formattedResults).forEach(([subjectName, subjectResults]) => {
@@ -83,6 +86,9 @@ function printResults(error, results) {
     console.table({ Results: subjectResults });
   });
 }
+
+// Keep track of elapsed time
+console.time('elapsedTime');
 
 // Read user-specified spec files from filesystem
 const specFiles = fs.readdirSync(cypressConfig.integrationFolder)
