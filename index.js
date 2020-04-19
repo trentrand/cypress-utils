@@ -1,5 +1,8 @@
 #!/usr/bin/env node
+const fs = require('fs');
 const yargs = require('yargs');
+const cypress = require('cypress');
+const cypressConfig = require('../cypress.json');
 
 var argv = yargs.scriptName('cypress-utils')
   .usage('$0 <cmd> [args]')
@@ -30,4 +33,19 @@ var argv = yargs.scriptName('cypress-utils')
   .showHelpOnFail(true)
   .argv
 
-console.log(`Command ran with args: ${argv}`);
+// Read user-specified spec files from filesystem
+const specFiles = fs.readdirSync(cypressConfig.integrationFolder)
+  .filter(fileName => fileName.toLowerCase().includes(argv.fileIdentifier))
+  .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
+
+try {
+  const results = await cypress.run({
+    ...cypressConfig,
+    spec: specFiles.join(','),
+    reporter: 'list'
+  });
+  return results;
+}
+catch (error) {
+  throw error;
+}
