@@ -2,6 +2,7 @@
 const fs = require('fs');
 const yargs = require('yargs');
 const timesLimit = require('async/timesLimit');
+const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
 const cypressConfig = require('../cypress.json');
 
@@ -48,12 +49,39 @@ async function createTestSample() {
   }
 }
 
+function computeResults(results) {
+  const resultsBySubject = groupBy(results.map(({ runs }) => runs).flat(), (result) => {
+    return result.spec.name.replace('.spec.js', '');
+  });
+
+  return Object.entries(resultsBySubject).reduce((statsBySubject, [subjectName, subjectResults]) => {
+    statsBySubject[subjectName] = subjectResults.reduce((subjectStats, { stats: sampleStats }) => {
+        for (let statIdentifier in sampleStats) {
+            // Filter out the wall clock attributes, these don't sum correctly because tests can run in parallel
+            // Also filter out the `suites` property. This property does not provide value to the results.
+            if (statIdentifier.startsWith('wallClock') || statIdentifier === 'suites') {
+              continue;
+            }
+
+            subjectStats[statIdentifier] = (subjectStats[statIdentifier] || 0) + sampleStats[statIdentifier];
+        }
+        return subjectStats;
+    }, {});
+    return statsBySubject;
+  }, {});
+}
+
 function printResults(error, results) {
   if (error) {
     throw error;
   }
 
-  console.log(JSON.stringify(results, null, 2));
+  const formattedResults = computeResults(results);
+
+  Object.entries(formattedResults).forEach(([subjectName, subjectResults]) => {
+    console.log(`Results for '${subjectName}' test:`);
+    console.table({ Results: subjectResults });
+  });
 }
 
 // Read user-specified spec files from filesystem
