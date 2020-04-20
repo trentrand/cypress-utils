@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require('fs');
+const { performance } = require('perf_hooks');
 const yargs = require('yargs');
 const timesLimit = require('async/timesLimit');
 const groupBy = require('lodash/groupBy');
@@ -75,9 +76,9 @@ function printResults(error, results) {
   if (error) {
     throw error;
   }
-
-  const elapsedTimeInSeconds = parseInt(console.timeLog('elapsedTime')) / 1000;
-  console.log(`Stress test completed in ${elapsedTimeInSeconds} seconds`);
+  const processEndTime = performance.now();
+  const elapsedTimeInSeconds = parseInt((processEndTime - processStartTime) / 1000);
+  console.log(`Stress test completed in ${elapsedTimeInSeconds} seconds.\n`);
 
   const formattedResults = computeResults(results);
 
@@ -88,7 +89,7 @@ function printResults(error, results) {
 }
 
 // Keep track of elapsed time
-console.time('elapsedTime');
+const processStartTime = performance.now();
 
 // Read user-specified spec files from filesystem
 const specFiles = fs.readdirSync(cypressConfig.integrationFolder)
