@@ -2,6 +2,24 @@
 
 Easily parallelize and stress-test your Cypress tests
 
+## How to Use
+
+Cypress Utils is a command-line interface for parallelizing and stress-testing your Cypress tests.
+
+Install Cypress Utils to your project as a development dependency:
+
+  ```shell
+  npm install --save-dev cypress-utils
+  ```
+
+Or run it once using:
+
+  ```shell
+  npx cypress-utils --help
+  ```
+
+To learn how to use Cypress Utils, just run `cypress-utils --help`.
+
 ## Development Setup
 
 1. Clone the repository:
@@ -24,21 +42,3 @@ Easily parallelize and stress-test your Cypress tests
   ```
 
 Cypress Utils are now executable globally with the command `cypress-utils`.
-
-## How to Use
-
-Cypress Utils is a command-line interface for parallelizing and stress-testing your Cypress tests.
-
-Install Cypress Utils to your project as a development dependency:
-
-  ```shell
-  npm install --save-dev cypress-utils
-  ```
-
-Or run it once using:
-
-  ```shell
-  npx cypress-utils --help
-  ```
-
-To learn how to use Cypress Utils, just run `cypress-utils --help`.
