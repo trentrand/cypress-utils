@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const { performance } = require('perf_hooks');
+const path = require('path');
 const yargs = require('yargs');
 const timesLimit = require('async/timesLimit');
 const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
-const cypressConfig = require('../cypress.json');
 
 var argv = yargs.scriptName('cypress-utils')
   .usage('$0 <cmd> [args]')
@@ -29,6 +29,18 @@ var argv = yargs.scriptName('cypress-utils')
         description: 'Number of trial attempts to run test',
         default: 4,
       })
+      .option('configFile', {
+        alias: ['c', 'config'],
+        type: ['string', 'boolean'],
+        description: 'Path to the config file to be used. If false is passed, no config file will be used.',
+        default: 'cypress.json',
+      })
+      .option('integrationFolder', {
+        alias: ['i', 'integration'],
+        type: 'string',
+        description: 'Path to folder containing integration test files',
+        default: 'cypress/integration',
+      })
   })
   .help()
   .alias('help', 'h')
@@ -39,7 +51,7 @@ var argv = yargs.scriptName('cypress-utils')
 async function createTestSample() {
   try {
     const results = await cypress.run({
-      ...cypressConfig,
+      config: (argv.configFile === false ? {} : cypressConfig),
       spec: specFiles.join(','),
       reporter: 'list'
     });
@@ -83,7 +95,7 @@ function printResults(error, results) {
   const formattedResults = computeResults(results);
 
   Object.entries(formattedResults).forEach(([subjectName, subjectResults]) => {
-    console.log(`Results for '${subjectName}' test:`);
+    console.log(`Results for '${subjectName}' test:\n`);
     console.table({ Results: subjectResults });
   });
 }
@@ -91,10 +103,61 @@ function printResults(error, results) {
 // Keep track of elapsed time
 const processStartTime = performance.now();
 
+// Initialize the Cypress runner configuration
+let cypressConfig = {};
+
+try {
+  // Passing `--configFile false` will explicitly _not_ attempt to load a configuration file
+  if (argv.configFile !== 'false') {
+    cypressConfig = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), argv.configFile), 'utf8')) || {};
+  }
+
+  // Fall-back to option `--integrationFolder` if it doesn't exist in the config
+  cypressConfig.integrationFolder = cypressConfig.integrationFolder || argv.integrationFolder;
+
+} catch (err) {
+  if (err.code === 'ENOENT') {
+    console.warn(`
+      Could not load a Cypress configuration at path: \`${argv.configFile}\`
+
+      Specify the path to your configuration with the \`--configFile\` command-line option,
+      or run this command from the appropriate working directory.`.replace(/  +/g, '')
+    );
+
+    if (argv.integrationFolder === undefined) {
+      console.warn(`
+        Without a configuration file, a path to your integration folder must be explicitly
+        provided using the \`--integrationFolder\` command-line option.`.replace(/  +/g, '')
+      );
+      return;
+    }
+  } else {
+    console.error(err)
+  }
+}
+
 // Read user-specified spec files from filesystem
-const specFiles = fs.readdirSync(cypressConfig.integrationFolder)
-  .filter(fileName => fileName.toLowerCase().includes(argv.fileIdentifier))
-  .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
+let specFiles;
+
+try {
+  specFiles = fs.readdirSync(cypressConfig.integrationFolder)
+    .filter(fileName => fileName.toLowerCase().includes(argv.fileIdentifier))
+    .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
+} catch (err) {
+  if (err.code === 'ENOENT') {
+    console.warn(`
+      Could not load Cypress spec files at path: \`${cypressConfig.integrationFolder}\`
+
+      Specify the path to your test files with the \`--integrationFolder\` command-line option,
+      or use the path specified in your Cypress configuration file.
+
+      See the \`--configFile\` command-line option.`.replace(/  +/g, '')
+    );
+  } else {
+    console.error(err)
+  }
+  return;
+}
 
 // Run stress-test command
 timesLimit(argv.trialCount, argv.limit, createTestSample, printResults);
