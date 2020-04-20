@@ -95,7 +95,7 @@ function printResults(error, results) {
   const formattedResults = computeResults(results);
 
   Object.entries(formattedResults).forEach(([subjectName, subjectResults]) => {
-    console.log(`Results for '${subjectName}' test:\n`);
+    console.log(`Results for ${argv.trialCount} samples of the '${subjectName}' test:\n`);
     console.table({ Results: subjectResults });
   });
 }
