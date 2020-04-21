@@ -46,6 +46,7 @@ var argv = yargs.scriptName('cypress-utils')
   .alias('help', 'h')
   .demandCommand()
   .showHelpOnFail(true)
+  .wrap(Math.min(120, yargs.terminalWidth))
   .argv
 
 async function createTestSample() {
