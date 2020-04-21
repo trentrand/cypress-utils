@@ -16,14 +16,16 @@ var argv = yargs.scriptName('cypress-utils')
     yargs
       .positional('fileIdentifier', {
         type: 'string',
-        describe: 'A unique identifier for the spec file to test',
+        describe: 'A unique identifier for the spec file to test.\nIf not specified, all spec files will be ran.',
+        default: '',
       })
   })
-  .command('stress-test <fileIdentifier>', 'Stress test a Cypress spec file', (yargs) => {
+  .command('stress-test [fileIdentifier]', 'Stress test a Cypress spec file', (yargs) => {
     yargs
       .positional('fileIdentifier', {
         type: 'string',
         describe: 'A unique identifier for the spec file to test',
+        default: '',
       })
       .option('trialCount', {
         alias: ['n', 'count'],
@@ -168,7 +170,12 @@ let specFiles;
 
 try {
   specFiles = fs.readdirSync(cypressConfig.integrationFolder)
-    .filter(fileName => fileName.toLowerCase().includes(argv.fileIdentifier))
+    .filter(fileName => {
+      return (
+        fileName.endsWith('.spec.js') &&
+        fileName.toLowerCase().includes(argv.fileIdentifier)
+      );
+    })
     .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
 } catch (err) {
   if (err.code === 'ENOENT') {
