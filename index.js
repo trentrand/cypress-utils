@@ -3,25 +3,27 @@ const fs = require('fs');
 const { performance } = require('perf_hooks');
 const path = require('path');
 const yargs = require('yargs');
+const mapLimit = require('async/mapLimit');
 const timesLimit = require('async/timesLimit');
 const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
 
 var argv = yargs.scriptName('cypress-utils')
   .usage('$0 <cmd> [args]')
-  .example('$0 foo.spec.js', 'stress test the "foo" spec file')
-  .example('$0 bar', 'stress test the matched `bar.spec.js` file')
-  .command('$0 <fileIdentifier>', 'Stress test a Cypress spec file', (yargs) => {
+  .example('$0 stress-test foo.spec.js', 'stress test the "foo" spec file')
+  .example('$0 stress-test bar', 'stress test the matched `bar.spec.js` file')
+  .command('run-parallel [fileIdentifier]', 'Parallelize your local Cypress run', (yargs) => {
     yargs
       .positional('fileIdentifier', {
         type: 'string',
         describe: 'A unique identifier for the spec file to test',
       })
-      .option('threads', {
-        alias: ['t', 'limit'],
-        type: 'number',
-        description: 'Maximum number of parallel test runners',
-        default: 2,
+  })
+  .command('stress-test <fileIdentifier>', 'Stress test a Cypress spec file', (yargs) => {
+    yargs
+      .positional('fileIdentifier', {
+        type: 'string',
+        describe: 'A unique identifier for the spec file to test',
       })
       .option('trialCount', {
         alias: ['n', 'count'],
@@ -29,18 +31,27 @@ var argv = yargs.scriptName('cypress-utils')
         description: 'Number of trial attempts to run test',
         default: 4,
       })
-      .option('configFile', {
-        alias: ['c', 'config'],
-        type: ['string', 'boolean'],
-        description: 'Path to the config file to be used. If false is passed, no config file will be used.',
-        default: 'cypress.json',
-      })
-      .option('integrationFolder', {
-        alias: ['i', 'integration'],
-        type: 'string',
-        description: 'Path to folder containing integration test files',
-        default: 'cypress/integration',
-      })
+  })
+  .option('threads', {
+    alias: ['t', 'limit'],
+    type: 'number',
+    description: 'Maximum number of parallel test runners',
+    default: 2,
+    global: true,
+  })
+  .option('configFile', {
+    alias: ['c', 'config'],
+    type: 'string',
+    description: 'Path to the config file to be used.\nIf false is passed, no config file will be used.',
+    default: 'cypress.json',
+    global: true,
+  })
+  .option('integrationFolder', {
+    alias: ['i', 'integration'],
+    type: 'string',
+    description: 'Path to folder containing integration test files',
+    default: 'cypress/integration',
+    global: true,
   })
   .help()
   .alias('help', 'h')
@@ -85,20 +96,35 @@ function computeResults(results) {
   }, {});
 }
 
-function printResults(error, results) {
+
+function handleResults(error, results) {
   if (error) {
     throw error;
   }
+
   const processEndTime = performance.now();
   const elapsedTimeInSeconds = parseInt((processEndTime - processStartTime) / 1000);
-  console.log(`Stress test completed in ${elapsedTimeInSeconds} seconds.\n`);
+
+  console.log(`Command completed in ${elapsedTimeInSeconds} seconds.\n`);
 
   const formattedResults = computeResults(results);
 
   Object.entries(formattedResults).forEach(([subjectName, subjectResults]) => {
-    console.log(`Results for ${argv.trialCount} samples of the '${subjectName}' test:\n`);
-    console.table({ Results: subjectResults });
+    printResultsForCommand(subjectName, subjectResults, command);
   });
+}
+
+function printResultsForCommand(subjectName, subjectResults, command) {
+  switch (command) {
+    case 'stress-test':
+      console.log(`Results for ${argv.trialCount} samples of the '${subjectName}' test:\n`);
+      break;
+    case 'run-parallel':
+      console.log(`Results for the '${subjectName}' test:\n`);
+      break;
+  }
+
+  console.table({ Results: subjectResults });
 }
 
 // Keep track of elapsed time
@@ -160,5 +186,12 @@ try {
   return;
 }
 
-// Run stress-test command
-timesLimit(argv.trialCount, argv.limit, createTestSample, printResults);
+const command = argv._[0];
+
+const commandHandlers = {
+  'run-parallel': () => mapLimit(specFiles, argv.limit, createTestSample, handleResults),
+  'stress-test': () => timesLimit(argv.trialCount, argv.limit, createTestSample, handleResults),
+};
+
+// Run the appropriate command by calling its handler
+commandHandlers[command]();
