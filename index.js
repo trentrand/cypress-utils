@@ -12,17 +12,17 @@ var argv = yargs.scriptName('cypress-utils')
   .usage('$0 <cmd> [args]')
   .example('$0 stress-test foo.spec.js', 'stress test the "foo" spec file')
   .example('$0 stress-test bar', 'stress test the matched `bar.spec.js` file')
-  .command('run-parallel [fileIdentifier]', 'Parallelize your local Cypress run', (yargs) => {
+  .command('run-parallel [fileIdentifiers..]', 'Parallelize your local Cypress run', (yargs) => {
     yargs
-      .positional('fileIdentifier', {
+      .positional('fileIdentifiers', {
         type: 'string',
         describe: 'A unique identifier for the spec file to test.\nIf not specified, all spec files will be ran.',
         default: '',
       })
   })
-  .command('stress-test [fileIdentifier]', 'Stress test a Cypress spec file', (yargs) => {
+  .command('stress-test [fileIdentifiers..]', 'Stress test a Cypress spec file', (yargs) => {
     yargs
-      .positional('fileIdentifier', {
+      .positional('fileIdentifiers', {
         type: 'string',
         describe: 'A unique identifier for the spec file to test',
         default: '',
@@ -173,7 +173,7 @@ try {
     .filter(fileName => {
       return (
         fileName.endsWith('.spec.js') &&
-        fileName.toLowerCase().includes(argv.fileIdentifier)
+        argv.fileIdentifiers.some((fileIdentifier) => fileName.includes(fileIdentifier))
       );
     })
     .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
