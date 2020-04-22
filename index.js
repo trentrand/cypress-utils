@@ -76,8 +76,14 @@ async function createTestSample() {
   }
 }
 
+function resultIsSuccess(result) {
+  return result.failures === undefined;
+}
+
 function computeResults(results) {
-  const resultsBySubject = groupBy(results.map(({ runs }) => runs).flat(), (result) => {
+  const processedResults = results.filter(resultIsSuccess).map(({ runs }) => runs).flat();
+
+  const resultsBySubject = groupBy(processedResults, (result) => {
     return result.spec.name.replace('.spec.js', '');
   });
 
