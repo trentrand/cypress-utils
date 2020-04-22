@@ -182,7 +182,7 @@ try {
     .filter(fileName => {
       return (
         fileName.endsWith('.spec.js') &&
-        argv.fileIdentifiers.some((fileIdentifier) => fileName.includes(fileIdentifier))
+        argv.fileIdentifiers.some((fileIdentifier) => fileName.toLowerCase().includes(fileIdentifier))
       );
     })
     .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
