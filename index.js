@@ -110,6 +110,9 @@ function handleResults(error, results) {
     throw error;
   }
 
+  // Clear command-line before printing results
+  process.stdout.write('\033c')
+
   const processEndTime = performance.now();
   const elapsedTimeInSeconds = parseInt((processEndTime - processStartTime) / 1000);
 
@@ -125,10 +128,10 @@ function handleResults(error, results) {
 function printResultsForCommand(subjectName, subjectResults, command) {
   switch (command) {
     case 'stress-test':
-      console.log(`Results for ${argv.trialCount} samples of the '${subjectName}' test:\n`);
+      console.log(`\nResults for ${argv.trialCount} samples of the '${subjectName}' test:\n`);
       break;
     case 'run-parallel':
-      console.log(`Results for the '${subjectName}' test:\n`);
+      console.log(`\nResults for the '${subjectName}' test:\n`);
       break;
   }
 
