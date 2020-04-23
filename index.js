@@ -5,6 +5,7 @@ const path = require('path');
 const yargs = require('yargs');
 const mapLimit = require('async/mapLimit');
 const timesLimit = require('async/timesLimit');
+const capitalize = require('lodash/capitalize');
 const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
 
@@ -125,6 +126,12 @@ function handleResults(error, results) {
   });
 }
 
+function formatTableData(tableData) {
+  return {
+    Results: Object.fromEntries(Object.entries(tableData).map(([key, value]) => [capitalize(key), value]))
+  };
+}
+
 function printResultsForCommand(subjectName, subjectResults, command) {
   switch (command) {
     case 'stress-test':
@@ -135,7 +142,7 @@ function printResultsForCommand(subjectName, subjectResults, command) {
       break;
   }
 
-  console.table({ Results: subjectResults });
+  console.table(formatTableData(subjectResults));
 }
 
 // Keep track of elapsed time
