@@ -24,7 +24,7 @@
   "homepage": "https://github.com/trentrand/cypress-utils#readme",
   "dependencies": {
     "async": "^3.2.0",
-    "cypress": "^4.4.0",
+    "cypress": "^4.0.0",
     "lodash": "^4.17.15",
     "yargs": "^15.3.1"
   }
