@@ -4,7 +4,6 @@ const { performance } = require('perf_hooks');
 const path = require('path');
 const yargs = require('yargs');
 const mapLimit = require('async/mapLimit');
-const timesLimit = require('async/timesLimit');
 const capitalize = require('lodash/capitalize');
 const castArray = require('lodash/castArray');
 const groupBy = require('lodash/groupBy');
@@ -214,7 +213,10 @@ const command = argv._[0];
 
 const commandHandlers = {
   'run-parallel': () => mapLimit(specFiles, argv.limit, createTestSample, handleResults),
-  'stress-test': () => timesLimit(argv.trialCount, argv.limit, createTestSample, handleResults),
+  'stress-test': () => {
+    const repeatedSpecFiles = Array(argv.trialCount).fill(specFiles).flat();
+    return mapLimit(repeatedSpecFiles, argv.limit, createTestSample, handleResults);
+  },
 };
 
 // Run the appropriate command by calling its handler
