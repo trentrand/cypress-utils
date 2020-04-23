@@ -6,6 +6,7 @@ const yargs = require('yargs');
 const mapLimit = require('async/mapLimit');
 const timesLimit = require('async/timesLimit');
 const capitalize = require('lodash/capitalize');
+const castArray = require('lodash/castArray');
 const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
 
@@ -63,11 +64,11 @@ var argv = yargs.scriptName('cypress-utils')
   .wrap(Math.min(120, yargs.terminalWidth))
   .argv
 
-async function createTestSample() {
+async function createTestSample(specIdentifiers) {
   try {
     const results = await cypress.run({
       config: (argv.configFile === false ? {} : cypressConfig),
-      spec: specFiles.join(','),
+      spec: castArray(specIdentifiers).join(','),
       reporter: 'list'
     });
     return results;
