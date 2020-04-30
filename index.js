@@ -206,6 +206,20 @@ try {
   return;
 }
 
+if (specFiles.length === 0) {
+  console.warn(`
+    No Cypress spec files were found. You may have specified invalid file identifiers.
+
+    The following file identifiers were provided: ${argv.fileIdentifiers.map((id => `"${id}"`)).join(', ')}
+
+    Your configuration specifies that test files are contained within the following directory:
+    \`${cypressConfig.integrationFolder}\`
+
+    See help for the \`--integrationFolder\` command-line option if this is incorrect.`.replace(/  +/g, '')
+  );
+  return;
+}
+
 const command = argv._[0];
 
 const commandHandlers = {
