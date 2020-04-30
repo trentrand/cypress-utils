@@ -158,10 +158,6 @@ try {
   if (argv.configFile !== 'false') {
     cypressConfig = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), argv.configFile), 'utf8')) || {};
   }
-
-  // Fall-back to option `--integrationFolder` if it doesn't exist in the config
-  cypressConfig.integrationFolder = cypressConfig.integrationFolder || argv.integrationFolder;
-
 } catch (err) {
   if (err.code === 'ENOENT') {
     console.warn(`
@@ -170,17 +166,14 @@ try {
       Specify the path to your configuration with the \`--configFile\` command-line option,
       or run this command from the appropriate working directory.`.replace(/  +/g, '')
     );
-
-    if (argv.integrationFolder === undefined) {
-      console.warn(`
-        Without a configuration file, a path to your integration folder must be explicitly
-        provided using the \`--integrationFolder\` command-line option.`.replace(/  +/g, '')
-      );
-      return;
-    }
   } else {
     console.error(err)
   }
+}
+
+// Fall-back to `integrationFolder` option if it doesn't exist in the config
+if (cypressConfig.integrationFolder === undefined) {
+  cypressConfig.integrationFolder = argv.integrationFolder;
 }
 
 // Read user-specified spec files from filesystem
