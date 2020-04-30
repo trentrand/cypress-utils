@@ -179,6 +179,8 @@ if (cypressConfig.integrationFolder === undefined) {
 // Read user-specified spec files from filesystem
 let specFiles;
 
+argv.fileIdentifiers = castArray(argv.fileIdentifiers);
+
 try {
   specFiles = fs.readdirSync(cypressConfig.integrationFolder)
     .filter(fileName => {
