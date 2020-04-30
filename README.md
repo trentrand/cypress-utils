@@ -1,34 +1,19 @@
-
 # Cypress Utils
 
 #### Easily parallelize and stress-test your Cypress tests
 
 Cypress Utils is a command-line interface for parallelizing and stress-testing your Cypress tests.
 
-> To get started, just run `npx cypress-utils --help`.
-> A command-line interface will prompt you with the available commands and options.
+To get started, just run `npx cypress-utils --help`.
 
-## Stress Testing
+## Commands
 
-To ensure your Cypress tests are not irregularly failing with false-negatives, stress testing new test files can be a reliable way of filtering out bad test code.
+### Run tests in parallel
 
-To stress test one or more test files, simply specify the files to run:
+To speed up day-to-day local Cypress test runs (e.g. before committing changes to a branch), multiple Cypress test runners can be ran in parallel.
+The impact on system resources is surprisingly manageable, even with multiple concurrent runners.
 
-  ```shell
-    cypress-utils stress-test specFileA specfileB
-  ```
-
-Additional command-line options may be specified, such as the sample size or number of concurrent threads:
-  ```shell
-   cypress-utils stress-test --trialCount 12 --threads 4
-  ```
-
-**Example of stress testing**:
-![Example of running the stress test command](assets/stress-test-example.gif)
-
-## Run Parallel
-
-To speed up day-to-day local Cypress test runs (e.g. before committing changes to a branch), multiple Cypress test runners can be ran in parallel. The impact on system resources is surprisingly manageable, even with multiple concurrent runners. In my unscientific n=1 sample size of running an entire suite, specifying two concurrent test runners provided the best results.
+In my unscientific n=1 sample size of running an entire suite, specifying two concurrent test runners provided the best results.
 
 > The total elapsed time was reduced by 38% when running a set of 12 tests in two concurrent threads
 
@@ -44,8 +29,27 @@ To run two or more test files in parallel, simply specify the files to run:
     cypress-utils run-parallel specFileA specfileB
   ```
 
-**Example of running tests in parallel**:
+#### Example of running tests in parallel:
 ![Example of running the run parallel command](assets/run-parallel-example.gif)
+
+
+### Stress test
+
+To ensure your Cypress tests are not irregularly failing with false-negatives, stress testing new test files can be a reliable way of filtering out bad test code.
+
+To stress test one or more test files, simply specify the files to run:
+
+  ```shell
+    cypress-utils stress-test specFileA specfileB
+  ```
+
+Additional command-line options may be specified, such as the sample size or number of concurrent threads:
+  ```shell
+   cypress-utils stress-test --trialCount 12 --threads 4
+  ```
+
+#### Example of stress testing:
+![Example of running the stress test command](assets/stress-test-example.gif)
 
 ## Installation
 
