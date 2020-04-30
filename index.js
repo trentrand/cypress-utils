@@ -67,7 +67,8 @@ var argv = yargs.scriptName('cypress-utils')
 async function createTestSample(specIdentifiers) {
   try {
     const results = await cypress.run({
-      config: (argv.configFile === false ? {} : cypressConfig),
+      config: cypressConfig,
+      configFile: argv.configFile,
       spec: castArray(specIdentifiers).join(','),
       reporter: 'list'
     });
@@ -200,7 +201,7 @@ try {
       Could not load Cypress spec files at path: \`${cypressConfig.integrationFolder}\`
 
       Specify the path to your test files with the \`--integrationFolder\` command-line option,
-      or use the path specified in your Cypress configuration file.
+      or ensure your Cypress configuration file is specified and setup correctly.
 
       See the \`--configFile\` command-line option.`.replace(/  +/g, '')
     );
