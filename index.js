@@ -70,7 +70,8 @@ async function createTestSample(specIdentifiers) {
       config: cypressConfig,
       configFile: argv.configFile,
       spec: castArray(specIdentifiers).join(','),
-      reporter: 'list'
+      reporter: 'list',
+      quiet: true,
     });
     return results;
   }
@@ -94,8 +95,11 @@ function computeResults(results) {
     statsBySubject[subjectName] = subjectResults.reduce((subjectStats, { stats: sampleStats }) => {
         for (let statIdentifier in sampleStats) {
             // Filter out the wall clock attributes, these don't sum correctly because tests can run in parallel
-            // Also filter out the `suites` property. This property does not provide value to the results.
-            if (statIdentifier.startsWith('wallClock') || statIdentifier === 'suites') {
+            if (statIdentifier === 'startedAt' || statIdentifier === 'endedAt' || statIdentifier === 'duration') {
+              continue;
+            }
+            // Also filter out the `suites` property. This property does not provide value to the results
+            if (statIdentifier === 'suites') {
               continue;
             }
 
