@@ -8,6 +8,7 @@ const capitalize = require('lodash/capitalize');
 const castArray = require('lodash/castArray');
 const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
+const glob = require('glob');
 
 var argv = yargs.scriptName('cypress-utils')
   .usage('$0 <cmd> [args]')
@@ -56,6 +57,11 @@ var argv = yargs.scriptName('cypress-utils')
     default: 'cypress/integration',
     global: true,
   })
+  .option('testFiles', {
+    type: 'string',
+    description: 'Glob pattern of the test files to load',
+    global: true,
+  })
   .help()
   .alias('help', 'h')
   .demandCommand()
@@ -88,7 +94,7 @@ function computeResults(results) {
   const processedResults = results.filter(resultIsSuccess).map(({ runs }) => runs).flat();
 
   const resultsBySubject = groupBy(processedResults, (result) => {
-    return result.spec.name.replace('.spec.js', '');
+    return result.spec.name.split('.')[0]
   });
 
   return Object.entries(resultsBySubject).reduce((statsBySubject, [subjectName, subjectResults]) => {
@@ -175,6 +181,9 @@ try {
   }
 }
 
+// Fall-back to Cypress configuration option if CLI option is not specified, otherwise use the default value
+argv.testFiles = argv.testFiles ?? cypressConfig.testFiles ?? '**/*.*';
+
 // Fall-back to `integrationFolder` option if it doesn't exist in the config
 if (cypressConfig.integrationFolder === undefined) {
   cypressConfig.integrationFolder = argv.integrationFolder;
@@ -186,14 +195,12 @@ let specFiles;
 argv.fileIdentifiers = castArray(argv.fileIdentifiers);
 
 try {
-  specFiles = fs.readdirSync(cypressConfig.integrationFolder)
+  specFiles = glob.sync(cypressConfig.integrationFolder + '/' + argv.testFiles)
     .filter(fileName => {
       return (
-        fileName.endsWith('.spec.js') &&
         argv.fileIdentifiers.some((fileIdentifier) => fileName.toLowerCase().includes(fileIdentifier))
       );
     })
-    .map(fileName => `${cypressConfig.integrationFolder}/${fileName}`);
 } catch (err) {
   if (err.code === 'ENOENT') {
     console.warn(`
