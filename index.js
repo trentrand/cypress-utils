@@ -63,7 +63,7 @@ var argv = yargs.scriptName('cypress-utils')
     global: true,
   })
   .option('reporter', {
-    alias: ['r', 'reporter'],
+    alias: ['r'],
     type: 'string',
     description: 'Reporter that will be used',
     default: 'list',
