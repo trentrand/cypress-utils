@@ -24,9 +24,14 @@
     "url": "https://github.com/trentrand/cypress-utils/issues"
   },
   "homepage": "https://github.com/trentrand/cypress-utils#readme",
+  "peerDependencies": {
+    "cypress": ">=5 <=8"
+  },
+  "devDependencies": {
+    "cypress": "8.3.0"
+  },
   "dependencies": {
     "async": "^3.2.0",
-    "cypress": "5.0.0 - 6",
     "glob": "^7.1.6",
     "lodash": "^4.17.15",
     "yargs": "^15.3.1"
