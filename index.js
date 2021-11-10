@@ -72,7 +72,6 @@ var argv = yargs.scriptName('cypress-utils')
   .help()
   .alias('help', 'h')
   .demandCommand()
-  .strict()
   .showHelpOnFail(true)
   .wrap(Math.min(120, yargs.terminalWidth))
   .argv
@@ -80,6 +79,7 @@ var argv = yargs.scriptName('cypress-utils')
 async function createTestSample(specIdentifiers) {
   try {
     const results = await cypress.run({
+      ...argv,
       config: cypressConfig,
       configFile: argv.configFile,
       spec: castArray(specIdentifiers).join(','),
