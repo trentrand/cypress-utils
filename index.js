@@ -62,13 +62,6 @@ var argv = yargs.scriptName('cypress-utils')
     description: 'Glob pattern of the test files to load',
     global: true,
   })
-  .option('reporter', {
-    alias: ['r'],
-    type: 'string',
-    description: 'Reporter that will be used',
-    default: 'list',
-    global: true,
-  })
   .help()
   .alias('help', 'h')
   .demandCommand()
@@ -83,7 +76,6 @@ async function createTestSample(specIdentifiers) {
       config: cypressConfig,
       configFile: argv.configFile,
       spec: castArray(specIdentifiers).join(','),
-      reporter: argv.reporter,
       quiet: true,
     });
     return results;
