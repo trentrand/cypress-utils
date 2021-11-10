@@ -1,6 +1,6 @@
 {
   "name": "cypress-utils",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Easily parallelize and stress-test your Cypress tests",
   "main": "index.js",
   "bin": {
