@@ -135,7 +135,7 @@ function handleResults(error, results) {
   }
 
   // Clear command-line before printing results
-  process.stdout.write('\x1Bc');
+  process.stdout.write('\033c');
 
   const processEndTime = performance.now();
   const elapsedTimeInSeconds = parseInt((processEndTime - processStartTime) / 1000);
