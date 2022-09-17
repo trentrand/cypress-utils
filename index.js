@@ -59,7 +59,7 @@ var argv = yargs.scriptName('cypress-utils')
   .option('specPattern', {
     alias: ['i', 'integration'],
     type: 'string',
-    description: 'Path to folder containing e2e test files',
+    description: 'A glob pattern of the test files to load.',
     default: 'cypress/e2e',
     global: true,
   })
