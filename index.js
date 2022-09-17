@@ -65,6 +65,7 @@ var argv = yargs.scriptName('cypress-utils')
   })
   .option('excludeSpecPattern', {
     type: 'array',
+    default: [],
     description: 'Array with the list of the files to exclude',
     global: true,
   })
