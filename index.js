@@ -9,6 +9,7 @@ const castArray = require('lodash/castArray');
 const groupBy = require('lodash/groupBy');
 const cypress = require('cypress');
 const glob = require('glob');
+const minimatch = require('minimatch');
 
 var argv = yargs.scriptName('cypress-utils')
   .usage('$0 <cmd> [args]')
@@ -186,9 +187,12 @@ try {
       );
     });
   if (argv.excludeSpecPattern.length > 0) {
-    argv.excludeSpecPattern.forEach(file => {
-      specFiles = specFiles.filter(e => e !== `${argv.specPattern}/${file}`);
-    });
+    const MINIMATCH_OPTIONS = { dot: true, matchBase: true };
+    specFiles = specFiles.filter(specFile =>
+      !argv.excludeSpecPattern.some(excludePattern =>
+        minimatch(specFile, excludePattern, MINIMATCH_OPTIONS)
+      )
+    );
   }
 } catch (err) {
   if (err.code === 'ENOENT') {
