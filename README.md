@@ -23,15 +23,22 @@ To run the entire suite in parallel, exclude any additional command-line argumen
     cypress-utils run-parallel
   ```
 
-To run two or more test files in parallel, simply specify the files to run:
+Use the command-line option `excludeSpecPattern` to exclude specific files.
 
   ```shell
-    cypress-utils run-parallel specFileA specfileB
+    cypress-utils run-parallel --excludeSpecPattern *.hot-update.js	
   ```
+
+To run two or more specific test files in parallel, just specify the files to run:
+
+  ```shell
+    cypress-utils run-parallel specFileA.cy.js specfileB.cy.js
+  ```
+
+> See more command-line options with `cypress-utils run-parallel --help`
 
 #### Example of running tests in parallel:
 ![Example of running the run parallel command](assets/run-parallel-example.gif)
-
 
 ### Stress test
 
@@ -47,6 +54,8 @@ Additional command-line options may be specified, such as the sample size or num
   ```shell
    cypress-utils stress-test --trialCount 12 --threads 4
   ```
+
+> See more command-line options with `cypress-utils stress-test --help`
 
 #### Example of stress testing:
 ![Example of running the stress test command](assets/stress-test-example.gif)
