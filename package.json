@@ -1,6 +1,6 @@
 {
   "name": "cypress-utils",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Easily parallelize and stress-test your Cypress tests",
   "main": "index.js",
   "bin": {
@@ -25,16 +25,17 @@
   },
   "homepage": "https://github.com/trentrand/cypress-utils#readme",
   "peerDependencies": {
-    "cypress": ">=5 <=8"
+    "cypress": ">=10"
   },
   "devDependencies": {
-    "cypress": "8.3.0"
+    "cypress": "^10.0.0"
   },
   "dependencies": {
-    "async": "^3.2.0",
-    "glob": "^7.1.6",
-    "lodash": "^4.17.15",
-    "yargs": "^15.3.1"
+    "async": "^3.2.4",
+    "glob": "^8.0.3",
+    "lodash": "^4.17.21",
+    "minimatch": "^3.0.4",
+    "yargs": "^17.5.1"
   },
   "engines": {
     "node": ">= 14.0.0"
