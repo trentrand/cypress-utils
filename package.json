@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "async": "^3.2.4",
-    "glob": "^8.0.3",
+    "glob": "^13.0.6",
     "lodash": "^4.17.21",
-    "minimatch": "^3.0.4",
+    "minimatch": "^10.2.2",
     "yargs": "^17.5.1"
   },
   "engines": {
